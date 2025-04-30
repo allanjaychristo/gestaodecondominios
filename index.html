@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa de Blocos</title>
+    <title>Blocos</title>
 </head>
 <body>
-<h1> Pesquisar Blocos </h1>
+<h2>Pesquisar bloco</h2>
+    
+<form action="/search" method="GET">
+        <input type="text" placeholder="Pesquisar..." name="query">
+        <button type="submit">Pesquisar</button>
+</form>
+    <br>
+    <button onclick="window.location.href='/'">Novo Bloco</button>
+<script>
+    async function listarBlocos() {
+            const response = await fetch(`${apiUrl}/blocos`);
+            const blocos = await response.json();
+            const listaBlocos = document.getElementById('listaBlocos');
+            listaViagens.innerHTML = '';
+
+            blocos.forEach(bloco => {
+                const row = `
+                    <tr>
+                        <td>${bloco_id}</td>
+                        <td>${nome}</td>
+                        <td>${descricao}</td>
+                    </tr>
+                `;
+                listaBloco.innerHTML += row;
+            });
+        }
+
+        // Inicializa a lista ao carregar a página
+        listarBlocos();
+</script>
 </body>
 </html>
