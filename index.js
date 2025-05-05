@@ -27,23 +27,25 @@ connection.connect((err) => {
 
 
 app.get('/', (req, res) => {
-      res.send(`
-        <html>
-          <head>
-            <title>Página Inicial</title>
-          </head>
-          <body>
-            <h1>Página Inicial</h1>
-            <nav>
-              <ul>
-                <li><a href="/blocos"> Blocos</a></li>
-                <li><a href="/moradores"> Moradores</a></li>
-                <li><a href="/apartamentos"> Apartamentos</a></li>
-              </ul>
-            </nav>
-          </body>
-        </html>
-      `);
+         res.send(`
+             <html>
+                 <head>
+                     <title>Página Inicial</title>
+                 </head>
+                 <body>
+                     <h1>Página Inicial</h1>
+                     <nav>
+                     <ul>
+                         <li><a href="/blocos"> Blocos</a></li>
+                         <li><a href="/moradores"> Moradores</a></li>
+                         <li><a href="/apartamentos"> Apartamentos</a></li>
+                         <li><a href="/pagamentos"> Pagamentos</a></li>
+                         <li><a href="/manutencao"> Manutenção</a></li>
+                     </ul>
+                     </nav>
+                 </body>
+            </html>
+         `);
     });
     
 
@@ -88,6 +90,7 @@ app.get('/blocos', (req, res) => {
                             `).join('')}
                         </table>
                     </body>
+                    <br> <button type="button" onclick="window.location.href='/'">Voltar</button>
                 </html>
             `);
         } else {
@@ -246,6 +249,7 @@ app.get('/apartamentos', (req, res) => {
                             `).join('')}
                         </table>
                     </body>
+                    <br> <button type="button" onclick="window.location.href='/'">Voltar</button>
                 </html>
             `);
         } else {
@@ -341,164 +345,171 @@ app.get('/editar-apartamento/:id', (req, res) => {
 
 
 app.get('/moradores', (req, res) => {
-      const nome = req.query.nome || '';
-      const listar = nome ? 'SELECT * FROM moradores WHERE nome LIKE ?' : 'SELECT * FROM moradores';
-      const params = nome ? [`%${nome}%`] : [];
-      connection.query(listar, params, (err, rows) => {
-        if (!err) {
-          console.log("Consulta realizada com sucesso!");
-          res.send(`
-            <html>
-              <head>
-                <title>Pesquisa de Moradores</title>
-              </head>
-              <body>
-                <h1>Pesquisa de Moradores</h1>
-                <form method="GET" action="/moradores">
-                  <label for="nome">Pesquisar:</label>
-                  <input type="text" name="nome" value="${nome}">
-                  <button type="submit">Pesquisar</button>
-                  ${nome ? '<button type="button" onclick="window.location.href=\'/moradores\'">Voltar</button>' : ''}
-                  <button type="button" onclick="window.location.href='/cadastrar'">Novo Morador</button>
-                </form>
-                <table>
-                  <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                  </tr>
-                  ${rows.map(row => `
-                    <tr>
-                      <td>${row.morador_id}</td>
-                      <td>${row.nome}</td>
-                      <td>${row.cpf}</td>
-                      <td>${row.telefone}</td>
-                      <td>${row.email}</td>
-                      <td>
-                        <a href="/excluir/${row.morador_id}">Excluir</a>
-                        <a href="/editar/${row.morador_id}">Editar</a>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </table>
-              </body>
-            </html>
-          `);
-        } else {
-          console.error('Erro ao listar moradores:', err);
-          res.status(500).send('Erro ao listar moradores.');
-        }
-      });
+        const nome = req.query.nome || '';
+        const listar = nome ? 'SELECT * FROM moradores WHERE nome LIKE ?' : 'SELECT * FROM moradores';
+        const params = nome ? [`%${nome}%`] : [];
+        connection.query(listar, params, (err, rows) => {
+        if (!err) {
+            console.log("Consulta realizada com sucesso!");
+            res.send(`
+                <html>
+                    <head>
+                    <title>Pesquisa de Moradores</title>
+                    </head>
+                    <body>
+                    <h1>Pesquisa de Moradores</h1>
+                    <form method="GET" action="/moradores">
+                    <label for="nome">Pesquisar:</label>
+                    <input type="text" name="nome" value="${nome}">
+                    <button type="submit">Pesquisar</button>
+                ${nome ? '<button type="button" onclick="window.location.href=\'/moradores\'">Voltar</button>' : ''}
+                    <button type="button" onclick="window.location.href='/cadastrar'">Novo Morador</button>
+                </form>
+                <table>
+                    <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                     <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                    </tr>
+                     ${rows.map(row => `
+                         <tr>
+                         <td>${row.morador_id}</td>
+                         <td>${row.nome}</td>
+                         <td>${row.cpf}</td>
+                         <td>${row.telefone}</td>
+                         <td>${row.email}</td>
+                         <td>
+                             <a href="/excluir/${row.morador_id}">Excluir</a>
+                             <a href="/editar/${row.morador_id}">Editar</a>
+                         </td>
+                     </tr>
+                 `).join('')}
+                 </table>
+             </body>
+             <br> <button type="button" onclick="window.location.href='/'">Voltar</button>
+         </html>
+             `);
+         } else {
+             console.error('Erro ao listar moradores:', err);
+             res.status(500).send('Erro ao listar moradores.');
+             }
+        });
     });
     
     app.get('/cadastrar', (req, res) => {
-      res.send(`
-        <html>
-          <head>
-            <title>Cadastrar Novo Morador</title>
-          </head>
-          <body>
-            <h1>Cadastrar Novo Morador</h1>
-            <form method="POST" action="/cadastrar">
-              <label for="nome">Nome:</label><br>
-              <input type="text" name="nome" required><br><br>
-              <label for="cpf">CPF:</label><br>
-              <input type="text" name="cpf" required><br><br>
-              <label for="telefone">Telefone:</label><br>
-              <input type="text" name="telefone"><br><br>
-              <label for="email">Email:</label><br>
-              <input type="email" name="email"><br><br>
-              <button type="submit">Cadastrar</button>
-            </form>
-            <button onclick="window.location.href='/moradores'">Voltar</button>
-          </body>
-        </html>
-      `);
+         res.send(`
+            <html>
+                 <head>
+                    <title>Cadastrar Novo Morador</title>
+            </head>
+             <body>
+                 <h1>Cadastrar Novo Morador</h1>
+                 <form method="POST" action="/cadastrar">
+                     <label for="nome">Nome:</label><br>
+                     <input type="text" name="nome" required><br><br>
+                     <label for="cpf">CPF:</label><br>
+                     <input type="text" name="cpf" required><br><br>
+                     <label for="telefone">Telefone:</label><br>
+                     <input type="text" name="telefone"><br><br>
+                     <label for="email">Email:</label><br>
+                     <input type="email" name="email"><br><br>
+                 <button type="submit">Cadastrar</button>
+                 </form>
+                     <button onclick="window.location.href='/moradores'">Voltar</button>
+             </body>
+         </html>
+         `);
     });
     
     app.post('/cadastrar', (req, res) => {
-      const { nome, cpf, telefone, email } = req.body;
-      const sql = 'INSERT INTO moradores (nome, cpf, telefone, email) VALUES (?, ?, ?, ?)';
-      connection.query(sql, [nome, cpf, telefone, email], (err, result) => {
-        if (err) {
-          console.error('Erro ao cadastrar morador:', err);
-          res.status(500).send('Erro ao cadastrar morador.');
-        } else {
-          res.redirect('/moradores');
-        }
-      });
+         const { nome, cpf, telefone, email } = req.body;
+         const sql = 'INSERT INTO moradores (nome, cpf, telefone, email) VALUES (?, ?, ?, ?)';
+         connection.query(sql, [nome, cpf, telefone, email], (err, result) => {
+             if (err) {
+                 console.error('Erro ao cadastrar morador:', err);
+                 res.status(500).send('Erro ao cadastrar morador.');
+            } else {
+                 res.redirect('/moradores');
+            }
+        });
     });
     
     app.get('/excluir/:id', (req, res) => {
-      const id = req.params.id;
-      connection.query('DELETE FROM moradores WHERE morador_id = ?', [id], (err, result) => {
-        if (err) {
-          console.error('Erro ao excluir morador:', err);
-          res.status(500).send('Erro ao excluir morador.');
-        } else {
-          console.log("Morador excluído com sucesso!");
-          res.redirect('/moradores');
-        }
-      });
+         const id = req.params.id;
+         connection.query('DELETE FROM moradores WHERE morador_id = ?', [id], (err, result) => {
+             if (err) {
+                 console.error('Erro ao excluir morador:', err);
+                 res.status(500).send('Erro ao excluir morador.');
+             } else {
+                 console.log("Morador excluído com sucesso!");
+                 res.redirect('/moradores');
+             }
+         });
     });
     
     app.get('/editar/:id', (req, res) => {
-      const id = req.params.id;
-      const select = "SELECT * FROM moradores WHERE morador_id = ?";
-      connection.query(select, [id], (err, rows) => {
-        if (!err) {
-          if (rows.length > 0) {
-            console.log("Morador encontrado com sucesso!");
-            res.send(`
-              <html>
-                <head>
-                  <title>Editar Morador</title>
-                </head>
-                <body>
-                  <h1>Editar Morador</h1>
-                  <form action="/editar/${id}" method="POST">
-                    <label for="nome">Nome:</label><br>
-                    <input type="text" name="nome" value="${rows[0].nome}"><br><br>
-                    <label for="cpf">CPF:</label><br>
-                    <input type="text" name="cpf" value="${rows[0].cpf}"><br><br>
-                    <label for="telefone">Telefone:</label><br>
-                    <input type="text" name="telefone" value="${rows[0].telefone}"><br><br>
-                    <label for="email">Email:</label><br>
-                    <input type="email" name="email" value="${rows[0].email}"><br><br>
-                    <button type="submit">Salvar</button>
-                  </form>
-                  <button onclick="window.location.href='/moradores'">Voltar</button>
-                </body>
-              </html>
-            `);
-          } else {
-            console.log('Nenhum morador encontrado com o id fornecido.');
-            res.send('Nenhum morador encontrado.');
-          }
-        } else {
-          console.error('Erro ao buscar o morador:', err);
-          res.status(500).send('Erro ao buscar o morador.');
-        }
-      });
+         const id = req.params.id;
+         const select = "SELECT * FROM moradores WHERE morador_id = ?";
+         connection.query(select, [id], (err, rows) => {
+             if (!err) {
+             if (rows.length > 0) {
+                 console.log("Morador encontrado com sucesso!");
+                 res.send(`
+                 <html>
+                     <head>
+                         <title>Editar Morador</title>
+                 </head>
+                     <body>
+                        <h1>Editar Morador</h1>
+                        <form action="/editar/${id}" method="POST">
+                        <label for="nome">Nome:</label><br>
+                        <input type="text" name="nome" value="${rows[0].nome}"><br><br>
+                        <label for="cpf">CPF:</label><br>
+                        <input type="text" name="cpf" value="${rows[0].cpf}"><br><br>
+                        <label for="telefone">Telefone:</label><br>
+                        <input type="text" name="telefone" value="${rows[0].telefone}"><br><br>
+                        <label for="email">Email:</label><br>
+                    <input type="email" name="email" value="${rows[0].email}"><br><br>
+                        <button type="submit">Salvar</button>
+                </form>
+                        <button onclick="window.location.href='/moradores'">Voltar</button>
+                     </body>
+                </html>
+         `);
+             } else {
+                 console.log('Nenhum morador encontrado com o id fornecido.');
+                 res.send('Nenhum morador encontrado.');
+         }
+             } else {
+                 console.error('Erro ao buscar o morador:', err);
+                 res.status(500).send('Erro ao buscar o morador.');
+             }
+        });
     });
     
     app.post('/editar/:id', (req, res) => {
-      const id = req.params.id;
-      const { nome, cpf, telefone, email } = req.body;
-      const update = "UPDATE moradores SET nome = ?, cpf = ?, telefone = ?, email = ? WHERE morador_id = ?";
-      connection.query(update, [nome, cpf, telefone, email, id], (err, result) => {
-        if (!err) {
-          console.log("Morador editado com sucesso!");
-          res.redirect('/moradores');
-        } else {
-          console.error('Erro ao editar o morador:', err);
-          res.status(500).send('Erro ao editar o morador.');
-        }
-      });
+         const id = req.params.id;
+         const { nome, cpf, telefone, email } = req.body;
+         const update = "UPDATE moradores SET nome = ?, cpf = ?, telefone = ?, email = ? WHERE morador_id = ?";
+         connection.query(update, [nome, cpf, telefone, email, id], (err, result) => {
+             if (!err) {
+                 console.log("Morador editado com sucesso!");
+             res.redirect('/moradores');
+             } else {
+             console.error('Erro ao editar o morador:', err);
+             res.status(500).send('Erro ao editar o morador.');
+             }
+         });
     });
+
+    app.get('/pagamentos', (req, res) => {
+        });
+
+    app.get('/manutencao', (req, res) => {
+        });
 
 app.listen(8083, () => {
     console.log("Servidor rodando na url http://localhost:8083");
